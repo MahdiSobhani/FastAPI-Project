@@ -5,11 +5,9 @@ from auth import hash_password,verify_password,create_access_token
 
 router=APIRouter(prefix="/auth",tags=["Auth"])
 
-
 @router.post("/register",status_code=201)
 def register(user:UserCreate,connection=Depends(get_connection)):
     existing_user=connection.execute("SELECT id FROM users WHERE username=?",(user.username,)).fetchone()
-
     if existing_user:
         raise HTTPException(status_code=409,detail="Username already exists")
     hashed_password=hash_password(user.password)
@@ -24,5 +22,4 @@ def login(user:UserCreate,connection=Depends(get_connection)):
     if db_user is None or not verify_password(user.password,db_user["password"]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid username or password")
     token=create_access_token(db_user["id"])
-
     return {"access_token":token,"token_type":"bearer"}
