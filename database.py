@@ -12,14 +12,11 @@ def get_db():
 
 def init_db():
     connection=sqlite3.connect(DATABASE)
-
     connection.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL
-        )
-    """)
+            password TEXT NOT NULL)""")
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS tasks(
@@ -27,9 +24,7 @@ def init_db():
             title TEXT NOT NULL,
             completed BOOLEAN NOT NULL DEFAULT 0,
             user_id INTEGER NOT NULL,
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )
-    """)
+            FOREIGN KEY(user_id) REFERENCES users(id))""")
 
     connection.commit()
     connection.close()
