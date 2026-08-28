@@ -55,26 +55,13 @@ def update_task(
         raise TaskNotFound()
     connection.execute("UPDATE tasks SET title=COALESCE(?,title),completed=COALESCE(?,completed) WHERE id=? AND user_id=?",(task.title,task.completed,task_id,current_user["id"]))
     connection.commit()
-    row=connection.execute(
-        "SELECT id,title,completed FROM tasks WHERE id=? AND user_id=?",
-        (task_id,current_user["id"])
-    ).fetchone()
-
+    row=connection.execute("SELECT id,title,completed FROM tasks WHERE id=? AND user_id=?",(task_id,current_user["id"])).fetchone()
     return dict(row)
 
 
 @router.delete("/{task_id}",status_code=204)
-def delete_task(
-    task_id:int,
-    connection=Depends(get_connection),
-    current_user=Depends(get_current_user)
-):
-    cursor=connection.execute(
-        "DELETE FROM tasks WHERE id=? AND user_id=?",
-        (task_id,current_user["id"])
-    )
-
+def delete_task(task_id:int,connection=Depends(get_connection),current_user=Depends(get_current_user)):
+    cursor=connection.execute("DELETE FROM tasks WHERE id=? AND user_id=?",(task_id,current_user["id"]))
     connection.commit()
-
     if cursor.rowcount==0:
         raise TaskNotFound()
